@@ -9,7 +9,8 @@ var express = require('express')
   , uin = require('./routes/uin')
   , http = require('http')
   , path = require('path')
-  , fs = require('fs');
+  , fs = require('fs')
+  , user = require('./models/user.js');
 
 var app = express();
 
@@ -30,7 +31,8 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/users', user.list);
+
+//app.get('/users', user.list);
 
 app.get('/uin', uin.uin);
 
@@ -50,12 +52,18 @@ app.get('/form', function(req, res) {
 app.post('/signup', function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
+  user.addUser(username, password, function(err, user) {
+    if (err) throw err;
+    res.redirect('/form');
+  });
+/*
   if (username !== 'user' && password !== 'pwd') {
     res.redirect('/form');
   }
   else {
     res.redirect('/uin');
   }
+*/
 });
 
 http.createServer(app).listen(app.get('port'), function(){
